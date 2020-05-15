@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_profile_image"
+        android:title="Profile"/>
+
+    <item
+        android:id="@+id/new_post"
+        android:title="New Post"
+        android:icon="@drawable/add_post"/>
+
+
+    <item
+        android:id="@+id/nav_home"
+android:title="Home"/>
+
+    <item
+        android:id="@+id/nav_settings"
+        android:title="Settings"/>
+
+    <item
+        android:id="@+id/nav_logout"
+        android:title="Logout"/>
+</menu>
