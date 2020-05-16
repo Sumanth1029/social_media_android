@@ -78,7 +78,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                                 SendUserToProfile();
 
-                                Toast.makeText(RegisterActivity.this, "Registered successfully", Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(RegisterActivity.this, "Registered successfully", Toast.LENGTH_SHORT).show();
                                 loadingBar.dismiss();
                             }else{
                                 String message=task.getException().getMessage();
