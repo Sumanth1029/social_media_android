@@ -100,6 +100,7 @@ public class loginActivity extends AppCompatActivity {
 
     private void sendUserToRegister() {
         Intent registerIntent=new Intent(loginActivity.this,RegisterActivity.class);
+        registerIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(registerIntent);
   }
 }

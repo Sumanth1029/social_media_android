@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -20,6 +21,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+
+import javax.annotation.Nullable;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private FirebaseAuth mAuth;
     private DatabaseReference dbref;
+    private FirebaseFirestore fstore;
+    private TextView nav_name;
 
 
     @Override
@@ -37,17 +47,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         drawerLayout=(DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView=(NavigationView) findViewById(R.id.navigation_view);
         View navView=navigationView.inflateHeaderView(R.layout.navigation_header);
-
+        nav_name=(TextView) navView.findViewById(R.id.nav_name);
 
         //add appbar with title
         mToolbar=(Toolbar) findViewById(R.id.main_page_toolbar) ;
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("Home");
-
 
         //for hamburger menu toggle
         actionBarDrawerToggle=new ActionBarDrawerToggle(MainActivity.this,drawerLayout,R.string.drawer_open,R.string.drawer_close);
@@ -59,11 +67,21 @@ public class MainActivity extends AppCompatActivity {
         //firebase auth
         mAuth=FirebaseAuth.getInstance();
 
+        fstore=FirebaseFirestore.getInstance();
 
-        dbref= FirebaseDatabase.getInstance().getReference().child("users");
+        if(mAuth.getCurrentUser()!=null){
+            DocumentReference docRef=fstore.collection("users").document(mAuth.getCurrentUser().getUid());
+            if(docRef!=null){
+                docRef.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                    String navName=documentSnapshot.getString("initials");
+                    nav_name.setText(navName);
 
+                }
+            });}
 
-
+        }
 
 
         navigationView.setNavigationItemSelectedListener(
@@ -100,37 +118,8 @@ public class MainActivity extends AppCompatActivity {
         if(currentUser==null){
             SendUserToLogin();
         }
-//
-//        else{
-//            checkUserExistance();
-//        }
-
     }
 
-//    private void checkUserExistance() {
-//        final String uid=mAuth.getCurrentUser().getUid();
-//
-//        dbref.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                if(!dataSnapshot.hasChild(uid)){
-//                    sendUserToSetup();
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-//    }
-
-//    private void sendUserToSetup() {
-//        Intent profile=new Intent(MainActivity.this,setup.class);
-//        profile.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//        startActivity(profile);
-//        finish();
-//    }
 
     private void SendUserToLogin() {
         Intent loginIntent=new Intent(MainActivity.this,loginActivity.class);

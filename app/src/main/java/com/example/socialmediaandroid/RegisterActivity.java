@@ -22,7 +22,7 @@ public class RegisterActivity extends AppCompatActivity {
 
 
     private EditText remail,rpassword,repassword;
-    private Button registerbtn;
+    private Button registerbtn,loginBtn;
     private FirebaseAuth mAuth;
     private ProgressDialog loadingBar;
     String email,password;
@@ -40,6 +40,7 @@ public class RegisterActivity extends AppCompatActivity {
         rpassword=(EditText) findViewById(R.id.register_password);
         repassword=(EditText) findViewById(R.id.register_confirm_password);
         registerbtn=(Button) findViewById(R.id.register_btn);
+        loginBtn=(Button) findViewById(R.id.loginbtn);
         loadingBar=new ProgressDialog(this);
 
         registerbtn.setOnClickListener(new View.OnClickListener() {
@@ -49,6 +50,22 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
+        loginBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendUserToLogin();
+            }
+        });
+
+    }
+
+    private void sendUserToLogin() {
+        Intent profileIntent=new Intent(RegisterActivity.this,loginActivity.class);
+//        profileIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+
+        startActivity(profileIntent);
+        finish();
     }
 
     private void CreateUser() {

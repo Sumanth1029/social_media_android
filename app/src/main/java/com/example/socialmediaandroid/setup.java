@@ -15,6 +15,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
@@ -23,6 +25,10 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.auth.User;
+
+import java.util.EventListener;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -76,17 +82,13 @@ String email,password;
     }
 
     private void saveProfile() {
-        String fname=firstName.getText().toString();
-        String lname=lastName.getText().toString();
+        final String fname=firstName.getText().toString();
+        final String lname=lastName.getText().toString();
         String place=pplace.getText().toString();
         String initials=String.valueOf(fname.charAt(0))+String.valueOf(lname.charAt(0));
         initials=initials.toUpperCase();
 
-        final Users u1=new Users();
-        u1.setFirstName(fname);
-        u1.setLastNname(lname);
-        u1.setInitials(initials);
-        u1.setPlace(place);
+
 
         if(TextUtils.isEmpty(fname)){
             Toast.makeText(this, "Please enter first name", Toast.LENGTH_SHORT).show();
@@ -105,43 +107,53 @@ String email,password;
             loadingBar.show();
             loadingBar.setCanceledOnTouchOutside(true);
 
-            mAuth.createUserWithEmailAndPassword(email,password)
+                final String finalInitials = initials;
+                mAuth.createUserWithEmailAndPassword(email,password)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()){
                                 String uid= FirebaseAuth.getInstance().getCurrentUser().getUid();
-                                u1.setUid(uid);
 
                                 loadingBar2.setTitle("Creating user profile");
                                 loadingBar2.setMessage("Please wait.");
                                 loadingBar2.show();
                                 loadingBar2.setCanceledOnTouchOutside(true);
 
+//
 
-                                docRef.set(u1).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                Map<String, String> usersMap = new HashMap<>();
+                                usersMap.put("firstName", fname.toUpperCase());
+                                usersMap.put("lastName", lname.toUpperCase());
+                                usersMap.put("initials", finalInitials.toUpperCase());
+
+                                db.collection("users").document(uid).set(usersMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if(task.isSuccessful()){
-
                                             SendUserToMain();
                                             Toast.makeText(setup.this, "Successfully registered", Toast.LENGTH_SHORT).show();
                                             loadingBar2.dismiss();
-
                                         }
                                         else{
                                             String message=task.getException().getMessage();
                                             Toast.makeText(setup.this, "Error: "+message, Toast.LENGTH_SHORT).show();
                                             loadingBar2.dismiss();
                                         }
+
                                     }
                                 });
+
+
+
+
+
 
 
                                 loadingBar.dismiss();
                             }else{
                                 String message=task.getException().getMessage();
-//                                Toast.makeText(setup.this, "Error: "+message, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(setup.this, "Error: "+message, Toast.LENGTH_LONG).show();
 //                                AlertDialogLayout
                                 loadingBar.dismiss();
 
