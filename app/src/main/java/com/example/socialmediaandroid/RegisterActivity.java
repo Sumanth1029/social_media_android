@@ -25,6 +25,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Button registerbtn;
     private FirebaseAuth mAuth;
     private ProgressDialog loadingBar;
+    String email,password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +52,8 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void CreateUser() {
-        String email=remail.getText().toString();
-        String password=rpassword.getText().toString();
+         email=remail.getText().toString();
+         password=rpassword.getText().toString();
         String re_password=repassword.getText().toString();
 
         if(TextUtils.isEmpty(email)){
@@ -64,30 +65,7 @@ public class RegisterActivity extends AppCompatActivity {
         }else if(!password.equals(re_password)){
             Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
         }else{
-
-            loadingBar.setTitle("Registering");
-            loadingBar.setMessage("Please wait until we register you");
-            loadingBar.show();
-            loadingBar.setCanceledOnTouchOutside(true);
-
-            mAuth.createUserWithEmailAndPassword(email,password)
-                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if(task.isSuccessful()){
-
-                                SendUserToProfile();
-
-//                                Toast.makeText(RegisterActivity.this, "Registered successfully", Toast.LENGTH_SHORT).show();
-                                loadingBar.dismiss();
-                            }else{
-                                String message=task.getException().getMessage();
-                                Toast.makeText(RegisterActivity.this, "Error: "+message, Toast.LENGTH_SHORT).show();
-                                loadingBar.dismiss();
-
-                            }
-                        }
-                    });
+            SendUserToProfile();
         }
 
 
@@ -95,7 +73,10 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void SendUserToProfile() {
         Intent profileIntent=new Intent(RegisterActivity.this,setup.class);
-        profileIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//        profileIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        profileIntent.putExtra("email",email);
+        profileIntent.putExtra("password",password);
+
         startActivity(profileIntent);
         finish();
     }

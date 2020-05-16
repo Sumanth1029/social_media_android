@@ -2,7 +2,9 @@ package com.example.socialmediaandroid;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AlertDialogLayout;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +17,7 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -28,7 +31,11 @@ public class setup extends AppCompatActivity {
     private EditText firstName, lastName, pplace;
     private Button  save;
     private CircleImageView profilePic;
-    private ProgressDialog loadingBar;
+    private ProgressDialog loadingBar,loadingBar2;
+String email,password;
+    private FirebaseAuth mAuth;
+
+
 
 
     //Firestore init
@@ -42,12 +49,20 @@ public class setup extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
 
 
+        Intent intent=getIntent();
+         email=intent.getStringExtra("email");
+         password=intent.getStringExtra("password");
+
+
         firstName=(EditText) findViewById(R.id.firstName);
         lastName=(EditText) findViewById(R.id.lastName);
         pplace=(EditText) findViewById(R.id.place);
         save=(Button) findViewById(R.id.saveButton);
-        profilePic=(CircleImageView) findViewById(R.id.profilePic);
+//        profilePic=(CircleImageView) findViewById(R.id.profilePic);
         loadingBar=new ProgressDialog(this);
+        loadingBar2=new ProgressDialog(this);
+
+        mAuth=FirebaseAuth.getInstance();
 
 
         save.setOnClickListener(new View.OnClickListener() {
@@ -67,7 +82,7 @@ public class setup extends AppCompatActivity {
         String initials=String.valueOf(fname.charAt(0))+String.valueOf(lname.charAt(0));
         initials=initials.toUpperCase();
 
-        Users u1=new Users();
+        final Users u1=new Users();
         u1.setFirstName(fname);
         u1.setLastNname(lname);
         u1.setInitials(initials);
@@ -82,32 +97,61 @@ public class setup extends AppCompatActivity {
             if(TextUtils.isEmpty(place)){
             Toast.makeText(this, "Please enter place", Toast.LENGTH_SHORT).show();
         }else{
-                String uid= FirebaseAuth.getInstance().getCurrentUser().getUid();
-                u1.setUid(uid);
-
-                loadingBar.setTitle("Creating user profile");
-                loadingBar.setMessage("Please wait.");
-                loadingBar.show();
-                loadingBar.setCanceledOnTouchOutside(true);
 
 
-                docRef.set(u1).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                       if(task.isSuccessful()){
 
-                           SendUserToMain();
-                           Toast.makeText(setup.this, "Successfully registered", Toast.LENGTH_SHORT).show();
-                           loadingBar.dismiss();
+            loadingBar.setTitle("Registering");
+            loadingBar.setMessage("Please wait until we register you");
+            loadingBar.show();
+            loadingBar.setCanceledOnTouchOutside(true);
 
-                       }
-                       else{
-                           String message=task.getException().getMessage();
-                           Toast.makeText(setup.this, "Error: "+message, Toast.LENGTH_SHORT).show();
-                           loadingBar.dismiss();
-                       }
-                    }
-                });
+            mAuth.createUserWithEmailAndPassword(email,password)
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if(task.isSuccessful()){
+                                String uid= FirebaseAuth.getInstance().getCurrentUser().getUid();
+                                u1.setUid(uid);
+
+                                loadingBar2.setTitle("Creating user profile");
+                                loadingBar2.setMessage("Please wait.");
+                                loadingBar2.show();
+                                loadingBar2.setCanceledOnTouchOutside(true);
+
+
+                                docRef.set(u1).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if(task.isSuccessful()){
+
+                                            SendUserToMain();
+                                            Toast.makeText(setup.this, "Successfully registered", Toast.LENGTH_SHORT).show();
+                                            loadingBar2.dismiss();
+
+                                        }
+                                        else{
+                                            String message=task.getException().getMessage();
+                                            Toast.makeText(setup.this, "Error: "+message, Toast.LENGTH_SHORT).show();
+                                            loadingBar2.dismiss();
+                                        }
+                                    }
+                                });
+
+
+                                loadingBar.dismiss();
+                            }else{
+                                String message=task.getException().getMessage();
+//                                Toast.makeText(setup.this, "Error: "+message, Toast.LENGTH_SHORT).show();
+//                                AlertDialogLayout
+                                loadingBar.dismiss();
+
+                            }
+                        }
+                    });
+
+
+
+
             }
     }
 
