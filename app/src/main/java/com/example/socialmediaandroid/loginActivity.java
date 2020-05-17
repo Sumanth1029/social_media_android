@@ -60,7 +60,7 @@ public class loginActivity extends AppCompatActivity {
         String email=userEmail.getText().toString();
         String password=userPassword.getText().toString();
 
-        if(TextUtils.isEmpty(email)){
+        if(TextUtils.isEmpty(email)){       //checking for empty fields
             Toast.makeText(this, "Please enter email", Toast.LENGTH_SHORT).show();
         }else
         if(TextUtils.isEmpty(password)){

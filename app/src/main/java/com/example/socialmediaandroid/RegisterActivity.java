@@ -34,8 +34,6 @@ public class RegisterActivity extends AppCompatActivity {
 
 
         mAuth=FirebaseAuth.getInstance();
-
-
         remail=(EditText) findViewById(R.id.register_email);
         rpassword=(EditText) findViewById(R.id.register_password);
         repassword=(EditText) findViewById(R.id.register_confirm_password);
