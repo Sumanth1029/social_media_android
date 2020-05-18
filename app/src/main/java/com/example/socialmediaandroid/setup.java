@@ -38,7 +38,7 @@ public class setup extends AppCompatActivity {
     private Button  save;
     private CircleImageView profilePic;
     private ProgressDialog loadingBar,loadingBar2;
-String email,password;
+    String email,password;
     private FirebaseAuth mAuth;
 
 

@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.material.navigation.NavigationView;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference dbref;
     private FirebaseFirestore fstore;
     private TextView nav_name;
+    private ImageButton add_post;
 
 
     @Override
@@ -51,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         navigationView=(NavigationView) findViewById(R.id.navigation_view);
         View navView=navigationView.inflateHeaderView(R.layout.navigation_header);
         nav_name=(TextView) navView.findViewById(R.id.nav_name);
+        add_post=(ImageButton) findViewById(R.id.add_post);
 
         //add appbar with title
         mToolbar=(Toolbar) findViewById(R.id.main_page_toolbar) ;
@@ -84,6 +87,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+        add_post.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SendUserToPost();
+            }
+        });
+
+
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
@@ -94,8 +105,10 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-
-
+    private void SendUserToPost() {
+        Intent postIntent=new Intent(MainActivity.this,new_post.class);
+        startActivity(postIntent);
+    }
 
 
     @Override
