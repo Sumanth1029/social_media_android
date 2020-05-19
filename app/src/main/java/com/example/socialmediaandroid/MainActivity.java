@@ -17,11 +17,7 @@ import android.widget.Toast;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -106,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void SendUserToPost() {
-        Intent postIntent=new Intent(MainActivity.this,new_post.class);
+        Intent postIntent=new Intent(MainActivity.this, new_postActivity.class);
         startActivity(postIntent);
     }
 
